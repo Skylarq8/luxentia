@@ -1,9 +1,5 @@
-import { config } from "dotenv";
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@giftmind/db";
-import { fileURLToPath } from "node:url";
-
-config({ path: fileURLToPath(new URL("../../../../.env", import.meta.url)) });
 
 export const hasSupabaseConfig = Boolean(
   (process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL) &&

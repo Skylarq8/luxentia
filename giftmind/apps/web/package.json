@@ -9,6 +9,7 @@
     "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
+    "@giftmind/api": "file:../../apps/api",
     "@giftmind/db": "file:../../packages/db",
     "@giftmind/ui": "file:../../packages/ui",
     "@supabase/supabase-js": "^2.47.10",

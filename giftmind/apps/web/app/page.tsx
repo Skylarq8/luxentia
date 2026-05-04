@@ -31,8 +31,8 @@ export default function HomePage() {
   }, []);
 
   return (
-    <main className="bg-white text-zinc-950 dark:bg-[#0f0a03] dark:text-slate-50">
-      <section className="relative min-h-[calc(100vh-4rem)] overflow-hidden bg-[#fffbeb] dark:bg-[#0f0a03]">
+    <main className="overflow-x-hidden bg-white text-zinc-950 dark:bg-[#0f0a03] dark:text-slate-50">
+      <section className="relative overflow-hidden bg-[#fffbeb] dark:bg-[#0f0a03]">
         <div className="absolute inset-0 opacity-35 dark:opacity-32">
           <FloatingLines
             linesGradient={["#f59e0b", "#facc15", "#d97706"]}
@@ -49,16 +49,16 @@ export default function HomePage() {
           />
         </div>
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(245,158,11,0.18),transparent_30%),radial-gradient(circle_at_82%_18%,rgba(250,204,21,0.16),transparent_28%),linear-gradient(180deg,rgba(255,255,255,0.72),rgba(255,251,235,0.9)_48%,#ffffff_100%)] dark:bg-[radial-gradient(circle_at_20%_10%,rgba(180,83,9,0.26),transparent_34%),radial-gradient(circle_at_82%_18%,rgba(202,138,4,0.16),transparent_30%),linear-gradient(180deg,rgba(18,12,4,0.86),rgba(28,20,8,0.96)_52%,#0f0a03_100%)]" />
-        <div className="relative z-10 mx-auto grid min-h-[calc(100vh-4rem)] max-w-7xl items-center gap-10 px-4 py-12 lg:grid-cols-[1.02fr_0.98fr]">
-          <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} className="max-w-3xl">
+        <div className="relative z-10 mx-auto grid max-w-7xl items-center gap-10 px-4 py-12 lg:min-h-[calc(100vh-4rem)] lg:grid-cols-[1.02fr_0.98fr] lg:py-16">
+          <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-3xl">
             <p className="mb-5 inline-flex items-center gap-2 rounded-full border border-amber-200 bg-white/80 px-3 py-1.5 text-sm font-semibold text-amber-800 shadow-sm backdrop-blur dark:border-amber-500/25 dark:bg-[#1a1205]/85 dark:text-amber-200">
               <Sparkles className="size-4" />
               Luxentia AI бэлгийн зөвлөх
             </p>
-            <h1 className="text-5xl font-black leading-[1.03] tracking-tight text-zinc-950 dark:text-white sm:text-7xl">
+            <h1 className="text-3xl font-black leading-[1.1] tracking-tight text-zinc-950 dark:text-white sm:text-5xl lg:text-7xl lg:leading-[1.03]">
               Өөртөө болон хайртай хүмүүстээ зөв сонголт хий
             </h1>
-            <p className="mt-6 max-w-2xl text-lg leading-8 text-zinc-600 dark:text-zinc-300">
+            <p className="mt-4 max-w-2xl text-base leading-7 text-zinc-600 dark:text-zinc-300 sm:mt-6 sm:text-lg sm:leading-8">
               Хэнд өгөх, ямар мэдрэмж төрүүлэх, хэдэн төгрөгийн төсөвтэйгээ хэлэхэд Luxentia танд тохирох санаа, барааг цэгцтэй санал болгоно.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
@@ -77,7 +77,7 @@ export default function HomePage() {
             </div>
             <p className="mt-4 text-sm font-medium text-zinc-500 dark:text-zinc-400">Урамтай, хэрэгтэй, төсөвтөө таарсан сонголтууд нэг дор</p>
 
-            <div className="mt-10 grid max-w-xl grid-cols-3 gap-4 pt-6">
+            <div className="mt-8 grid max-w-xl grid-cols-3 gap-4 border-t border-zinc-100 pt-6 dark:border-[#3a2a0c]">
               {[
                 ["50+", "Сонголт"],
                 ["7", "Бэлгийн төрөл"],
@@ -95,7 +95,7 @@ export default function HomePage() {
             initial={{ opacity: 0, y: 28, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ delay: 0.08 }}
-            className="relative block"
+            className="relative hidden lg:block"
           >
             <div className="absolute -inset-6 rounded-[2rem] bg-amber-500/10 blur-3xl dark:bg-amber-900/18" />
             <div className="relative overflow-hidden rounded-3xl border border-zinc-200 bg-white shadow-2xl shadow-zinc-900/10 dark:border-[#3a2a0c] dark:bg-[#1a1205] dark:shadow-amber-950/20">
@@ -144,10 +144,10 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="border-y border-zinc-200 bg-white py-12 dark:border-[#3a2a0c] dark:bg-[#1a1205]">
+      <section className="border-y border-zinc-200 bg-white py-8 dark:border-[#3a2a0c] dark:bg-[#1a1205] sm:py-12">
         <div className="mx-auto max-w-7xl px-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-black text-zinc-950 dark:text-slate-50">Бэлгээ төрлөөр нь сонгох</h2>
+            <h2 className="text-xl font-black text-zinc-950 dark:text-slate-50 sm:text-2xl">Бэлгээ төрлөөр нь сонгох</h2>
             {/* <Link className="text-sm font-bold text-amber-600 dark:text-amber-300" href="/shop">Бүгдийг харах</Link> */}
           </div>
           <div className="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
@@ -167,9 +167,9 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section id="featured" className="mx-auto max-w-7xl px-4 py-12">
+      <section id="featured" className="mx-auto max-w-7xl px-4 py-8 sm:py-12">
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-black text-zinc-950 dark:text-slate-50">Өнөөдөр санал болгох бэлгүүд</h2>
+          <h2 className="text-xl font-black text-zinc-950 dark:text-slate-50 sm:text-2xl">Өнөөдөр санал болгох бэлгүүд</h2>
           <Link className="text-sm font-bold text-amber-600 dark:text-amber-300" href="/shop">Бүгдийг үзэх</Link>
         </div>
         <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">

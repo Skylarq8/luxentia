@@ -1,9 +1,14 @@
 import type { Category, Product } from "@giftmind/db";
 
-export const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8787";
+const getApiUrl = () => {
+  const env = process.env.NEXT_PUBLIC_API_URL;
+  if (env) return env;
+  if (typeof window !== "undefined") return window.location.origin;
+  return "http://localhost:3000";
+};
 
 export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
-  const response = await fetch(`${API_URL}${path}`, {
+  const response = await fetch(`${getApiUrl()}${path}`, {
     ...init,
     headers: {
       "Content-Type": "application/json",
