@@ -1,0 +1,22 @@
+{
+  "name": "@giftmind/web",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev -p 3000",
+    "build": "next build",
+    "lint": "next lint",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@giftmind/db": "file:../../packages/db",
+    "@giftmind/ui": "file:../../packages/ui",
+    "@supabase/supabase-js": "^2.47.10",
+    "framer-motion": "^11.15.0",
+    "lucide-react": "^0.468.0",
+    "next": "14.2.21",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "three": "^0.167.1"
+  }
+}

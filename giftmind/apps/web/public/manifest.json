@@ -1,0 +1,16 @@
+{
+  "name": "Luxentia",
+  "short_name": "Luxentia",
+  "description": "AI-powered Mongolian gift shop",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fafafa",
+  "theme_color": "#f43f5e",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

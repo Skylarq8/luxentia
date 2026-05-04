@@ -1,0 +1,20 @@
+{
+  "name": "@giftmind/admin",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev -p 3001",
+    "build": "next build",
+    "lint": "next lint",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@giftmind/db": "file:../../packages/db",
+    "@giftmind/ui": "file:../../packages/ui",
+    "framer-motion": "^11.15.0",
+    "lucide-react": "^0.468.0",
+    "next": "14.2.21",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  }
+}

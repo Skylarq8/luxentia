@@ -1,0 +1,17 @@
+{
+  "name": "@giftmind/ui",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^2.6.0",
+    "lucide-react": "^0.468.0",
+    "react": "^18.3.1"
+  }
+}

@@ -1,0 +1,50 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+.dark {
+  color-scheme: dark;
+}
+
+* {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+*::-webkit-scrollbar {
+  display: none;
+}
+
+body {
+  min-height: 100vh;
+  background: #fafafa;
+}
+
+.dark body {
+  background: #050914;
+}
+
+.masonry {
+  columns: 1;
+  column-gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .masonry {
+    columns: 2;
+  }
+}
+
+@media (min-width: 1024px) {
+  .masonry {
+    columns: 3;
+  }
+}
+
+.masonry > * {
+  break-inside: avoid;
+}

@@ -1,0 +1,13 @@
+{
+  "name": "@giftmind/db",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.47.10"
+  }
+}
