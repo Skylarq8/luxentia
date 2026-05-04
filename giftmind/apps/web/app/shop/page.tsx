@@ -26,8 +26,30 @@ const pricePresets = [
   { label: "Бүгд", value: "250000" }
 ];
 
+function ProductCardSkeleton() {
+  return (
+    <div className="overflow-hidden rounded-xl border border-zinc-200 bg-white dark:border-[#3a2a0c] dark:bg-[#1a1205]">
+      <div className="h-36 w-full animate-pulse bg-zinc-200 dark:bg-zinc-800 sm:h-48 lg:h-52" />
+      <div className="flex flex-1 flex-col p-3 sm:p-4">
+        <div className="space-y-2">
+          <div className="h-3.5 w-full animate-pulse rounded-full bg-zinc-200 dark:bg-zinc-800" />
+          <div className="h-3.5 w-2/3 animate-pulse rounded-full bg-zinc-200 dark:bg-zinc-800" />
+        </div>
+        <div className="mt-2 space-y-1.5">
+          <div className="h-3 w-full animate-pulse rounded-full bg-zinc-200 dark:bg-zinc-800" />
+          <div className="h-3 w-4/5 animate-pulse rounded-full bg-zinc-200 dark:bg-zinc-800" />
+        </div>
+        <div className="mt-4 flex items-center justify-between gap-2">
+          <div className="h-4 w-20 animate-pulse rounded-full bg-zinc-200 dark:bg-zinc-800" />
+          <div className="h-8 w-16 animate-pulse rounded-lg bg-zinc-200 dark:bg-zinc-800" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function ShopPage() {
-  const [products, setProducts] = useState<Product[]>(sampleProducts);
+  const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>(sampleCategories);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("");
@@ -35,6 +57,7 @@ export default function ShopPage() {
   const [sort, setSort] = useState("recommended");
   const [filterOpen, setFilterOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
 
   const query = useMemo(() => {
     const next = new URLSearchParams();
@@ -64,8 +87,11 @@ export default function ShopPage() {
       setLoading(true);
       getProducts(query)
         .then((data) => setProducts(data.products))
-        .catch(() => undefined)
-        .finally(() => setLoading(false));
+        .catch(() => setProducts(sampleProducts))
+        .finally(() => {
+          setLoading(false);
+          setInitialLoading(false);
+        });
     }, 250);
     return () => window.clearTimeout(timeout);
   }, [query]);
@@ -213,16 +239,22 @@ export default function ShopPage() {
           <section className="min-w-0">
             <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-zinc-200 bg-white px-4 py-3 shadow-sm dark:border-[#3a2a0c] dark:bg-[#1a1205]">
               <p className="text-sm font-semibold text-zinc-700 dark:text-slate-300">
-                <span className="font-black text-zinc-950 dark:text-slate-50">{visibleProducts.length}</span> бараа олдлоо
+                {initialLoading ? (
+                  <span className="inline-block h-4 w-28 animate-pulse rounded-full bg-zinc-200 dark:bg-zinc-800" />
+                ) : (
+                  <><span className="font-black text-zinc-950 dark:text-slate-50">{visibleProducts.length}</span> бараа олдлоо</>
+                )}
               </p>
-              {loading ? <span className="text-sm text-zinc-500 dark:text-slate-400">Уншиж байна...</span> : null}
+              {loading && !initialLoading ? <span className="text-sm text-zinc-500 dark:text-slate-400">Уншиж байна...</span> : null}
             </div>
 
             <div className="mt-5 grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 xl:grid-cols-4">
-              {visibleProducts.map((product) => <ProductCard key={product.id} product={product} />)}
+              {initialLoading
+                ? Array.from({ length: 8 }).map((_, i) => <ProductCardSkeleton key={i} />)
+                : visibleProducts.map((product) => <ProductCard key={product.id} product={product} />)}
             </div>
 
-            {!loading && visibleProducts.length === 0 ? (
+            {!initialLoading && !loading && visibleProducts.length === 0 ? (
               <div className="mt-5 rounded-lg border border-dashed border-zinc-300 bg-white px-4 py-12 text-center dark:border-[#4a360f] dark:bg-[#1a1205]">
                 <p className="font-black text-zinc-950 dark:text-slate-50">Тохирох бараа олдсонгүй</p>
                 <p className="mt-2 text-sm text-zinc-500 dark:text-slate-400">Шүүлтүүрээ суллаад дахин хайгаарай.</p>
