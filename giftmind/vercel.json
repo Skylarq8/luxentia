@@ -1,0 +1,6 @@
+{
+  "installCommand": "npm install",
+  "buildCommand": "npm --workspace @giftmind/web run build",
+  "outputDirectory": "apps/web/.next",
+  "framework": "nextjs"
+}
