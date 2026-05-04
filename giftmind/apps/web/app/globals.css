@@ -21,11 +21,11 @@
 
 body {
   min-height: 100vh;
-  background: #fafafa;
+  background: #fffbeb;
 }
 
 .dark body {
-  background: #050914;
+  background: #0f0a03;
 }
 
 .masonry {

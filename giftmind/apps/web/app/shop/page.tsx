@@ -2,18 +2,38 @@
 
 import type { Category, Product } from "@giftmind/db";
 import { Button, Input } from "@giftmind/ui";
-import { Search, SlidersHorizontal } from "lucide-react";
+import { Check, Search, SlidersHorizontal, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { ProductCard } from "../../components/product-card";
 import { getCategories, getProducts } from "../../lib/api";
 import { sampleCategories, sampleProducts } from "../../lib/sample-data";
+
+const categoryLabels: Record<string, string> = {
+  electronics: "Технологи",
+  clothing: "Хувцас",
+  cosmetics: "Гоо сайхан",
+  food: "Амттан",
+  "home-decor": "Гэрийн декор",
+  books: "Ном",
+  toys: "Тоглоом",
+  jewelry: "Үнэт эдлэл"
+};
+
+const pricePresets = [
+  { label: "50k хүртэл", value: "50000" },
+  { label: "100k хүртэл", value: "100000" },
+  { label: "150k хүртэл", value: "150000" },
+  { label: "Бүгд", value: "250000" }
+];
 
 export default function ShopPage() {
   const [products, setProducts] = useState<Product[]>(sampleProducts);
   const [categories, setCategories] = useState<Category[]>(sampleCategories);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("");
-  const [maxPrice, setMaxPrice] = useState("150000");
+  const [maxPrice, setMaxPrice] = useState("250000");
+  const [sort, setSort] = useState("recommended");
+  const [filterOpen, setFilterOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const query = useMemo(() => {
@@ -23,6 +43,16 @@ export default function ShopPage() {
     if (maxPrice) next.set("maxPrice", maxPrice);
     return `?${next.toString()}`;
   }, [search, category, maxPrice]);
+
+  const visibleProducts = useMemo(() => {
+    const next = [...products];
+    if (sort === "price-asc") return next.sort((a, b) => a.price - b.price);
+    if (sort === "price-desc") return next.sort((a, b) => b.price - a.price);
+    if (sort === "name") return next.sort((a, b) => a.name.localeCompare(b.name));
+    return next;
+  }, [products, sort]);
+
+  const activeFilterCount = [search, category, maxPrice !== "250000" ? maxPrice : ""].filter(Boolean).length;
 
   useEffect(() => {
     setCategory(new URLSearchParams(window.location.search).get("category") ?? "");
@@ -40,42 +70,169 @@ export default function ShopPage() {
     return () => window.clearTimeout(timeout);
   }, [query]);
 
+  function clearFilters() {
+    setSearch("");
+    setCategory("");
+    setMaxPrice("250000");
+    setSort("recommended");
+  }
+
   return (
-    <main className="min-h-[calc(100vh-4rem)] bg-white px-4 py-8 text-zinc-950 dark:bg-[#050914] dark:text-slate-50">
-      <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[280px_1fr]">
-      <aside className="h-fit rounded-lg border border-zinc-200 bg-white p-4 shadow-sm dark:border-[#17233a] dark:bg-[#08111f]">
-        <div className="flex items-center gap-2 font-black">
-          <SlidersHorizontal className="size-5 text-blue-600 dark:text-blue-300" />
-          Шүүлтүүр
-        </div>
-        <label className="mt-5 block text-sm font-semibold">Хайх</label>
-        <div className="relative mt-2">
-          <Search className="absolute left-3 top-3 size-5 text-zinc-400" />
-          <Input className="pl-10 dark:border-[#17233a] dark:bg-[#0c1628] dark:text-slate-50" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="clear case, perfume..." />
-        </div>
-        <label className="mt-5 block text-sm font-semibold">Ангилал</label>
-        <select className="mt-2 min-h-11 w-full rounded-lg border border-zinc-200 bg-white px-3 dark:border-[#17233a] dark:bg-[#0c1628] dark:text-slate-50" value={category} onChange={(event) => setCategory(event.target.value)}>
-          <option value="">Бүгд</option>
-          {categories.map((item) => <option key={item.slug} value={item.slug}>{item.name}</option>)}
-        </select>
-        <label className="mt-5 block text-sm font-semibold">Дээд үнэ: {Number(maxPrice).toLocaleString("mn-MN")}₮</label>
-        <input className="mt-3 w-full accent-blue-600" type="range" min="10000" max="250000" step="5000" value={maxPrice} onChange={(event) => setMaxPrice(event.target.value)} />
-        <Button className="mt-5 w-full dark:bg-[#0c1628] dark:text-slate-50 dark:hover:bg-[#111d33]" variant="secondary" onClick={() => { setSearch(""); setCategory(""); setMaxPrice("250000"); }}>
-          Цэвэрлэх
-        </Button>
-      </aside>
-      <section>
-        <div className="flex items-end justify-between gap-4">
+    <main className="min-h-[calc(100vh-4rem)] bg-amber-50 px-4 py-6 text-zinc-950 dark:bg-[#0f0a03] dark:text-slate-50 sm:py-8">
+      <div className="mx-auto max-w-7xl">
+        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h1 className="text-3xl font-black">Shop</h1>
-            <p className="mt-1 text-zinc-600 dark:text-slate-400">{products.length} бараа</p>
+            <p className="text-sm font-bold text-amber-600 dark:text-amber-300">Luxentia shop</p>
+            <h1 className="mt-1 text-3xl font-black sm:text-4xl">Бараанууд</h1>
+            <p className="mt-2 text-sm text-zinc-600 dark:text-slate-400">
+              Өөртөө болон бэлэгт тохирох сонголтоо шүүлтүүрээр хурдан олоорой.
+            </p>
           </div>
-          {loading ? <span className="text-sm text-zinc-500 dark:text-slate-400">Уншиж байна...</span> : null}
+          <Button
+            variant="outline"
+            className="justify-between border-zinc-200 bg-white text-zinc-950 dark:border-[#3a2a0c] dark:bg-[#1a1205] dark:text-slate-50 lg:hidden"
+            onClick={() => setFilterOpen((value) => !value)}
+          >
+            <span className="inline-flex items-center gap-2">
+              <SlidersHorizontal className="size-5" />
+              Шүүлтүүр
+            </span>
+            {activeFilterCount > 0 ? (
+              <span className="grid size-6 place-items-center rounded-full bg-amber-500 text-xs text-white">{activeFilterCount}</span>
+            ) : null}
+          </Button>
         </div>
-        <div className="masonry mt-6">
-          {products.map((product) => <ProductCard key={product.id} product={product} />)}
+
+        <div className="grid gap-6 lg:grid-cols-[300px_1fr]">
+          <aside className={`${filterOpen ? "block" : "hidden"} h-fit rounded-lg border border-zinc-200 bg-white p-4 shadow-sm dark:border-[#3a2a0c] dark:bg-[#1a1205] lg:sticky lg:top-24 lg:block`}>
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2 font-black">
+                <SlidersHorizontal className="size-5 text-amber-600 dark:text-amber-300" />
+                Шүүлтүүр
+              </div>
+              <button
+                className="grid size-9 place-items-center rounded-lg text-zinc-500 hover:bg-amber-100 dark:text-slate-400 dark:hover:bg-[#241807] lg:hidden"
+                onClick={() => setFilterOpen(false)}
+                aria-label="Close filters"
+              >
+                <X className="size-5" />
+              </button>
+            </div>
+
+            <label className="mt-5 block text-sm font-semibold">Хайх</label>
+            <div className="relative mt-2">
+              <Search className="absolute left-3 top-3 size-5 text-zinc-400" />
+              <Input
+                className="pl-10 dark:border-[#3a2a0c] dark:bg-[#241807] dark:text-slate-50"
+                value={search}
+                onChange={(event) => setSearch(event.target.value)}
+                placeholder="утасны гэр, үнэртэн..."
+              />
+            </div>
+
+            <div className="mt-5">
+              <div className="flex items-center justify-between">
+                <label className="text-sm font-semibold">Ангилал</label>
+                {category ? (
+                  <button className="text-xs font-bold text-amber-600 dark:text-amber-300" onClick={() => setCategory("")}>
+                    Бүгд
+                  </button>
+                ) : null}
+              </div>
+              <div className="mt-3 grid grid-cols-2 gap-2 lg:grid-cols-1">
+                {categories.map((item) => {
+                  const active = category === item.slug;
+                  return (
+                    <button
+                      key={item.slug}
+                      className={`flex min-h-10 items-center justify-between rounded-lg border px-3 text-left text-sm font-semibold transition ${
+                        active
+                          ? "border-amber-500 bg-amber-50 text-amber-800 dark:border-amber-400 dark:bg-amber-500/10 dark:text-amber-200"
+                          : "border-zinc-200 bg-white text-zinc-700 hover:border-amber-200 hover:bg-amber-50 dark:border-[#3a2a0c] dark:bg-[#241807] dark:text-slate-300 dark:hover:border-amber-500/30"
+                      }`}
+                      onClick={() => setCategory(active ? "" : item.slug)}
+                    >
+                      <span className="truncate">{categoryLabels[item.slug] ?? item.name}</span>
+                      {active ? <Check className="size-4 shrink-0" /> : null}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="mt-5">
+              <label className="block text-sm font-semibold">Дээд үнэ</label>
+              <p className="mt-1 text-2xl font-black text-zinc-950 dark:text-slate-50">
+                {Number(maxPrice).toLocaleString("mn-MN")}₮
+              </p>
+              <input
+                className="mt-3 w-full accent-amber-500"
+                type="range"
+                min="10000"
+                max="250000"
+                step="5000"
+                value={maxPrice}
+                onChange={(event) => setMaxPrice(event.target.value)}
+              />
+              <div className="mt-3 grid grid-cols-2 gap-2">
+                {pricePresets.map((preset) => (
+                  <button
+                    key={preset.value}
+                    className={`rounded-lg border px-3 py-2 text-xs font-bold transition ${
+                      maxPrice === preset.value
+                        ? "border-amber-500 bg-amber-50 text-amber-800 dark:border-amber-400 dark:bg-amber-500/10 dark:text-amber-200"
+                        : "border-zinc-200 bg-white text-zinc-600 hover:bg-amber-50 dark:border-[#3a2a0c] dark:bg-[#241807] dark:text-slate-300"
+                    }`}
+                    onClick={() => setMaxPrice(preset.value)}
+                  >
+                    {preset.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="mt-5">
+              <label className="block text-sm font-semibold">Эрэмбэлэх</label>
+              <select
+                className="mt-2 min-h-11 w-full rounded-lg border border-zinc-200 bg-white px-3 text-sm dark:border-[#3a2a0c] dark:bg-[#241807] dark:text-slate-50"
+                value={sort}
+                onChange={(event) => setSort(event.target.value)}
+              >
+                <option value="recommended">Санал болгосноор</option>
+                <option value="price-asc">Үнэ өсөхөөр</option>
+                <option value="price-desc">Үнэ буурахаар</option>
+                <option value="name">Нэрээр</option>
+              </select>
+            </div>
+
+            <Button className="mt-5 w-full dark:bg-[#241807] dark:text-slate-50 dark:hover:bg-[#2f2109]" variant="secondary" onClick={clearFilters}>
+              Цэвэрлэх
+            </Button>
+          </aside>
+
+          <section className="min-w-0">
+            <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-zinc-200 bg-white px-4 py-3 shadow-sm dark:border-[#3a2a0c] dark:bg-[#1a1205]">
+              <p className="text-sm font-semibold text-zinc-700 dark:text-slate-300">
+                <span className="font-black text-zinc-950 dark:text-slate-50">{visibleProducts.length}</span> бараа олдлоо
+              </p>
+              {loading ? <span className="text-sm text-zinc-500 dark:text-slate-400">Уншиж байна...</span> : null}
+            </div>
+
+            <div className="mt-5 grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 xl:grid-cols-4">
+              {visibleProducts.map((product) => <ProductCard key={product.id} product={product} />)}
+            </div>
+
+            {!loading && visibleProducts.length === 0 ? (
+              <div className="mt-5 rounded-lg border border-dashed border-zinc-300 bg-white px-4 py-12 text-center dark:border-[#4a360f] dark:bg-[#1a1205]">
+                <p className="font-black text-zinc-950 dark:text-slate-50">Тохирох бараа олдсонгүй</p>
+                <p className="mt-2 text-sm text-zinc-500 dark:text-slate-400">Шүүлтүүрээ суллаад дахин хайгаарай.</p>
+                <Button className="mt-5" variant="secondary" onClick={clearFilters}>
+                  Шүүлтүүр цэвэрлэх
+                </Button>
+              </div>
+            ) : null}
+          </section>
         </div>
-      </section>
       </div>
     </main>
   );

@@ -7,10 +7,10 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        primary: "bg-rose-500 text-white shadow-lg shadow-rose-500/25 hover:bg-rose-600 focus-visible:outline-rose-500",
-        secondary: "bg-zinc-100 text-zinc-950 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-50 dark:hover:bg-zinc-700",
-        ghost: "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800",
-        outline: "border border-zinc-200 bg-white text-zinc-900 hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-50"
+        primary: "bg-amber-500 text-white shadow-lg shadow-amber-500/25 hover:bg-amber-600 focus-visible:outline-amber-500",
+        secondary: "bg-amber-100 text-zinc-950 hover:bg-amber-200 dark:bg-[#241807] dark:text-zinc-50 dark:hover:bg-[#2f2109]",
+        ghost: "text-zinc-700 hover:bg-amber-100 dark:text-zinc-200 dark:hover:bg-[#241807]",
+        outline: "border border-zinc-200 bg-white text-zinc-900 hover:bg-amber-50 dark:border-[#3a2a0c] dark:bg-[#0f0a03] dark:text-zinc-50"
       },
       size: {
         sm: "min-h-9 px-3",

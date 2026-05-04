@@ -6,27 +6,41 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Bot, Send, Sparkles } from "lucide-react";
 import { useRef, useState } from "react";
 import { ProductRecommendationCard } from "../../components/product-recommendation-card";
-import { API_URL, apiFetch } from "../../lib/api";
+import { apiFetch } from "../../lib/api";
 
 const suggestions = [
-  { label: "Эжд бэлэг авья 50,000₮", query: "gift mom", maxPrice: 50000 },
-  { label: "Найздаа төрсөн өдрийн бэлэг", query: "birthday gift friend", maxPrice: 100000 },
-  { label: "Охин найздаа гайхамшигтай бэлэг", query: "gift girlfriend romantic", maxPrice: 150000 }
+  {
+    label: "Ээждээ гэрт нь дулаан мэдрэмж өгөх бэлэг",
+    query: "mom home candle vase mug decor",
+    category: "home-decor",
+    maxPrice: 70000,
+    answer: "Ээждээ гэрийг нь улам тухтай, тайван болгох бэлэг сонгоё. Үнэрт лаа, аяганы хос, ваар зэрэг өдөр бүр харагдаж, хэрэглэгдэх зүйлс хамгийн дулаахан мэдрэмж төрүүлдэг."
+  },
+  {
+    label: "Аавдаа хэрэгтэй tech бэлэг 100,000₮ дотор",
+    query: "dad practical tech earbuds power bank",
+    category: "electronics",
+    maxPrice: 100000,
+    answer: "Аавдаа өдөр тутамдаа хэрэглэхэд амар, практик tech бэлэг сонгоё. Чихэвч, power bank зэрэг зүйлс гоё харагдахаас гадна үнэхээр хэрэг болдог."
+  },
+  {
+    label: "Найздаа төрсөн өдрийн хөгжилтэй бэлэг",
+    query: "friend birthday fun board game craft puzzle",
+    category: "toys",
+    maxPrice: 80000,
+    answer: "Найзын төрсөн өдөрт хэт албаны биш, хамтдаа тоглож инээх эсвэл дурсамж үлдээх бэлэг илүү гоё таардаг. Эдгээр нь fun vibe-тай, үнэ нь ч боломжийн сонголтууд."
+  },
+  {
+    label: "Найз охиндоо романтик гоо сайхны бэлэг",
+    query: "girlfriend romantic perfume lipstick makeup",
+    category: "cosmetics",
+    maxPrice: 150000,
+    answer: "Найз охиндоо сонгох бэлэг хувийн, гоёмсог, бага зэрэг романтик мэдрэмжтэй байвал хамгийн эвтэйхэн. Үнэртэн, уруулын сет, makeup хэрэгсэл зэрэг нь илүү thoughtful харагдана."
+  },
 ];
 
 type UiMessage = ChatMessage & { id: string };
 type Phase = "empty" | "searching" | "results" | "chat";
-
-function parseSse(buffer: string) {
-  return buffer
-    .split("\n\n")
-    .map((chunk) => {
-      const event = chunk.match(/^event:\s*(.*)$/m)?.[1];
-      const data = chunk.match(/^data:\s*([\s\S]*)$/m)?.[1];
-      return event && data ? { event, data } : null;
-    })
-    .filter(Boolean) as Array<{ event: string; data: string }>;
-}
 
 function SearchingAnimation({ label }: { label: string }) {
   return (
@@ -35,7 +49,7 @@ function SearchingAnimation({ label }: { label: string }) {
         {[0, 1, 2].map((i) => (
           <motion.div
             key={i}
-            className="size-4 rounded-full bg-blue-600"
+            className="size-4 rounded-full bg-amber-500"
             animate={{ y: [0, -20, 0] }}
             transition={{ duration: 0.7, repeat: Infinity, delay: i * 0.18, ease: "easeInOut" }}
           />
@@ -52,105 +66,102 @@ function SearchingAnimation({ label }: { label: string }) {
 export default function ChatPage() {
   const [phase, setPhase] = useState<Phase>("empty");
   const [activeLabel, setActiveLabel] = useState("");
+  const [activeAnswer, setActiveAnswer] = useState("");
   const [suggestedProducts, setSuggestedProducts] = useState<Product[]>([]);
   const [messages, setMessages] = useState<UiMessage[]>([]);
   const [input, setInput] = useState("");
-  const [chatLoading, setChatLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   async function handleSuggestion(s: typeof suggestions[0]) {
     setActiveLabel(s.label);
+    setActiveAnswer(s.answer);
+    setMessages([]);
+    setInput("");
     setPhase("searching");
 
     const [data] = await Promise.all([
-      apiFetch<{ products: Product[] }>("/api/products/search", {
-        method: "POST",
-        body: JSON.stringify({ query: s.query, maxPrice: s.maxPrice })
-      }).catch(() => ({ products: [] as Product[] })),
+      getSuggestionProducts(s),
       new Promise((r) => setTimeout(r, 3000))
     ]);
 
-    setSuggestedProducts((data as { products: Product[] }).products.slice(0, 6));
+    const uniqueProducts = Array.from(
+      new Map((data as { products: Product[] }).products.map((product) => [product.id, product])).values()
+    );
+    setSuggestedProducts(uniqueProducts.slice(0, 6));
     setPhase("results");
+  }
+
+  async function getSuggestionProducts(s: typeof suggestions[0]) {
+    const searchResult = await apiFetch<{ products: Product[] }>("/api/products/search", {
+      method: "POST",
+      body: JSON.stringify({ query: s.query, category: s.category, maxPrice: s.maxPrice })
+    }).catch(() => ({ products: [] as Product[] }));
+
+    if (searchResult.products.length > 0) return searchResult;
+
+    const params = new URLSearchParams({
+      category: s.category,
+      maxPrice: String(s.maxPrice)
+    });
+
+    return apiFetch<{ products: Product[] }>(`/api/products?${params.toString()}`)
+      .catch(() => ({ products: [] as Product[] }));
   }
 
   function resetToEmpty() {
     setPhase("empty");
     setSuggestedProducts([]);
     setActiveLabel("");
+    setActiveAnswer("");
     setMessages([]);
+    setInput("");
   }
 
-  async function submitChat(value = input) {
-    if (!value.trim() || chatLoading) return;
+  function submitChat(value = input) {
+    const normalized = value.trim().toLowerCase();
+    if (!normalized) return;
 
-    if (phase !== "chat") {
-      setPhase("chat");
-      setSuggestedProducts([]);
+    const matched = suggestions.find((s) => s.label.toLowerCase() === normalized);
+    if (matched) {
+      void handleSuggestion(matched);
+      return;
     }
 
     const userMsg: UiMessage = { id: crypto.randomUUID(), role: "user", content: value, createdAt: new Date().toISOString() };
     const assistantId = crypto.randomUUID();
-    const nextMessages = [...messages, userMsg];
-
-    setMessages([...nextMessages, { id: assistantId, role: "assistant", content: "", createdAt: new Date().toISOString() }]);
-    setInput("");
-    setChatLoading(true);
-
-    setTimeout(() => scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" }), 50);
-
-    try {
-      const response = await fetch(`${API_URL}/api/chat`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: nextMessages.map(({ role, content }) => ({ role, content })) })
-      });
-
-      const reader = response.body?.getReader();
-      if (!reader) return;
-
-      const decoder = new TextDecoder();
-      let pending = "";
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        pending += decoder.decode(value, { stream: true });
-
-        for (const item of parseSse(pending)) {
-          if (item.event === "token") {
-            setMessages((cur) => cur.map((m) => (m.id === assistantId ? { ...m, content: m.content + item.data } : m)));
-            scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
-          }
-          if (item.event === "done") {
-            const done = JSON.parse(item.data) as { response: string; recommendedProducts: Product[] };
-            setMessages((cur) => cur.map((m) => (m.id === assistantId ? { ...m, content: done.response, recommendedProducts: done.recommendedProducts } : m)));
-          }
-        }
-
-        if (pending.includes("\n\n")) pending = pending.slice(pending.lastIndexOf("\n\n") + 2);
+    setSuggestedProducts([]);
+    setActiveLabel("");
+    setActiveAnswer("");
+    setPhase("chat");
+    setMessages([
+      userMsg,
+      {
+        id: assistantId,
+        role: "assistant",
+        content: `Одоогоор Luxentia AI зөвхөн доорх ${suggestions.length} бэлгийн асуултад хариулна. Яг аль нэгийг нь сонгох эсвэл бүтнээр нь бичээрэй: ${suggestions.map((s) => `“${s.label}”`).join(", ")}.`,
+        createdAt: new Date().toISOString()
       }
-    } finally {
-      setChatLoading(false);
-    }
+    ]);
+    setInput("");
+    setTimeout(() => scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" }), 50);
   }
 
   return (
-    <main className="flex h-[calc(100vh-4rem)] flex-col bg-zinc-50 text-zinc-950 dark:bg-[#050914] dark:text-slate-50">
+    <main className="flex h-[calc(100dvh-9rem)] min-h-0 flex-col bg-amber-50 text-zinc-950 dark:bg-[#0f0a03] dark:text-slate-50 sm:h-[calc(100vh-4rem)]">
       {/* Header */}
-      <section className="border-b border-zinc-200 bg-white px-4 py-4 dark:border-[#17233a] dark:bg-[#08111f]">
+      <section className="shrink-0 border-b border-zinc-200 bg-white px-4 py-3 dark:border-[#3a2a0c] dark:bg-[#1a1205] sm:py-4">
         <div className="mx-auto flex max-w-4xl items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <span className="grid size-11 place-items-center rounded-lg bg-blue-600 text-white">
+            <span className="grid size-11 place-items-center rounded-lg bg-gradient-to-br from-amber-400 via-yellow-300 to-amber-600 text-amber-950 shadow-sm shadow-amber-500/30">
               <Bot className="size-6" />
             </span>
             <div>
               <h1 className="font-black">Luxentia AI</h1>
-              <p className="text-sm text-zinc-600 dark:text-slate-400">Төсөв, хүн, шалтгаанаа хэлээрэй.</p>
+              <p className="text-xs text-zinc-600 dark:text-slate-400 sm:text-sm">Төсөв, хүн, шалтгаанаа хэлээрэй.</p>
             </div>
           </div>
           {phase !== "empty" && (
-            <button onClick={resetToEmpty} className="text-sm font-semibold text-blue-600 hover:underline dark:text-blue-400">
+            <button onClick={resetToEmpty} className="text-sm font-semibold text-amber-600 hover:underline dark:text-amber-400">
               Шинэ хайлт
             </button>
           )}
@@ -158,16 +169,16 @@ export default function ChatPage() {
       </section>
 
       {/* Body */}
-      <div ref={scrollRef} className="flex-1 overflow-y-auto">
-        <div className="mx-auto max-w-4xl px-4 py-6">
+      <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto">
+        <div className="mx-auto max-w-4xl px-4 py-5 sm:py-6">
 
           {/* EMPTY: suggestion cards */}
           <AnimatePresence>
             {phase === "empty" && (
-              <motion.div key="empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex min-h-[60vh] flex-col items-center justify-center text-center">
-                <Sparkles className="size-10 text-blue-600 dark:text-blue-300" />
-                <h2 className="mt-3 text-3xl font-black">Ямар бэлэг хайж байна?</h2>
-                <p className="mt-2 text-sm text-zinc-500 dark:text-slate-400">Доорх саналаас сонгоно уу эсвэл өөрийн хүсэлтийг бичнэ үү</p>
+              <motion.div key="empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex min-h-[48dvh] flex-col items-center justify-center text-center sm:min-h-[60vh]">
+                <Sparkles className="size-10 text-amber-600 dark:text-amber-300" />
+                <h2 className="mt-3 text-2xl font-black sm:text-3xl">Ямар бэлэг хайж байна?</h2>
+                <p className="mt-2 text-sm text-zinc-500 dark:text-slate-400">Одоогоор доорх бэлгийн санаануудаас сонгоно уу.</p>
                 <div className="mt-8 grid w-full max-w-lg gap-3">
                   {suggestions.map((s, i) => (
                     <motion.button
@@ -176,7 +187,7 @@ export default function ChatPage() {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: i * 0.1 }}
                       onClick={() => handleSuggestion(s)}
-                      className="rounded-xl border border-zinc-200 bg-white p-4 text-left font-semibold shadow-sm transition hover:-translate-y-0.5 hover:border-blue-300 hover:shadow-md dark:border-[#17233a] dark:bg-[#08111f] dark:hover:border-blue-500/40"
+                      className="rounded-xl border border-zinc-200 bg-white p-4 text-left font-semibold shadow-sm transition hover:-translate-y-0.5 hover:border-amber-300 hover:shadow-md dark:border-[#3a2a0c] dark:bg-[#1a1205] dark:hover:border-amber-500/40"
                     >
                       {s.label}
                     </motion.button>
@@ -189,7 +200,7 @@ export default function ChatPage() {
           {/* SEARCHING: bounce animation */}
           <AnimatePresence>
             {phase === "searching" && (
-              <motion.div key="searching" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex min-h-[60vh] items-center justify-center">
+              <motion.div key="searching" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="flex min-h-[48dvh] items-center justify-center sm:min-h-[60vh]">
                 <SearchingAnimation label={activeLabel} />
               </motion.div>
             )}
@@ -202,6 +213,13 @@ export default function ChatPage() {
                 <p className="mb-6 font-bold text-zinc-950 dark:text-slate-50">
                   "{activeLabel}" — {suggestedProducts.length} бараа олдлоо
                 </p>
+                <motion.div
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mb-5 rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm leading-6 text-zinc-700 shadow-sm dark:border-[#3a2a0c] dark:bg-[#1a1205] dark:text-slate-200"
+                >
+                  {activeAnswer}
+                </motion.div>
                 <div className="grid gap-4">
                   {suggestedProducts.map((product, i) => (
                     <motion.div
@@ -233,14 +251,8 @@ export default function ChatPage() {
                     exit={{ opacity: 0 }}
                     className={message.role === "user" ? "ml-auto max-w-[85%]" : "mr-auto max-w-[92%]"}
                   >
-                    <div className={message.role === "user" ? "rounded-xl bg-blue-600 px-4 py-3 text-white" : "rounded-xl bg-white px-4 py-3 shadow-sm dark:bg-[#08111f]"}>
-                      {message.content || (chatLoading && message.role === "assistant" ? (
-                        <div className="flex items-end gap-1 py-1">
-                          {[0, 1, 2].map((i) => (
-                            <motion.div key={i} className="size-2 rounded-full bg-blue-400" animate={{ y: [0, -6, 0] }} transition={{ duration: 0.6, repeat: Infinity, delay: i * 0.15 }} />
-                          ))}
-                        </div>
-                      ) : null)}
+                    <div className={message.role === "user" ? "rounded-xl bg-amber-500 px-4 py-3 text-white" : "rounded-xl bg-white px-4 py-3 shadow-sm dark:bg-[#1a1205]"}>
+                      {message.content}
                     </div>
                     {message.recommendedProducts?.length ? (
                       <div className="mt-3 grid gap-3">
@@ -260,18 +272,18 @@ export default function ChatPage() {
       </div>
 
       {/* Input */}
-      <div className="border-t border-zinc-200 bg-zinc-50 px-4 py-4 dark:border-[#17233a] dark:bg-[#050914]">
+      <div className="shrink-0 border-t border-zinc-200 bg-amber-50 px-4 py-3 dark:border-[#3a2a0c] dark:bg-[#0f0a03] sm:py-4">
         <form
-          className="mx-auto flex max-w-4xl gap-2"
-          onSubmit={(e) => { e.preventDefault(); submitChat(); }}
+            className="mx-auto flex max-w-4xl gap-2"
+            onSubmit={(e) => { e.preventDefault(); submitChat(); }}
         >
           <Input
-            className="dark:border-[#17233a] dark:bg-[#0c1628] dark:text-slate-50"
+            className="dark:border-[#3a2a0c] dark:bg-[#241807] dark:text-slate-50"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="50,000₮ төсөвтэй, эждээ..."
+            placeholder="Дээрх асуултуудаас яг нэгийг бичнэ үү..."
           />
-          <Button size="icon" aria-label="Send" disabled={chatLoading}>
+          <Button size="icon" aria-label="Send">
             <Send className="size-5" />
           </Button>
         </form>

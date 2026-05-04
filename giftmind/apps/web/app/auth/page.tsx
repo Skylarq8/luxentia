@@ -76,13 +76,18 @@ export default function AuthPage() {
 
     setLoading(true);
     try {
-      const data = await apiFetch<{ user: Parameters<typeof setUser>[0]; session: { access_token: string } }>("/api/auth/register", {
+      await apiFetch<{ user: Parameters<typeof setUser>[0]; isNewUser: boolean }>("/api/auth/register", {
         method: "POST",
         body: JSON.stringify({ name, phone: localPhone, password })
       });
-      localStorage.setItem("luxentia_session", data.session.access_token);
-      setUser(data.user);
-      router.push("/profile");
+      setMode("login");
+      setStep("form");
+      setName("");
+      setPassword("");
+      setRepeatPassword("");
+      setShowPassword(false);
+      setShowRepeat(false);
+      setMessage("Бүртгэл амжилттай үүслээ. Одоо утас, нууц үгээрээ нэвтэрнэ үү.");
     } catch {
       setError("Бүртгэл үүсгэж чадсангүй. Дугаар бүртгэлтэй эсэхийг шалгана уу.");
     } finally {
@@ -110,10 +115,10 @@ export default function AuthPage() {
   }
 
   return (
-    <main className="grid min-h-[calc(100vh-4rem)] place-items-center bg-white px-4 py-10 text-zinc-950 dark:bg-[#050914] dark:text-slate-50">
-      <motion.section layout className="w-full max-w-md rounded-2xl border border-zinc-200 bg-white p-6 shadow-xl shadow-zinc-900/5 dark:border-[#17233a] dark:bg-[#08111f] dark:shadow-blue-950/20">
+    <main className="grid min-h-[calc(100vh-4rem)] place-items-center bg-white px-4 py-10 text-zinc-950 dark:bg-[#0f0a03] dark:text-slate-50">
+      <motion.section layout className="w-full max-w-md rounded-2xl border border-zinc-200 bg-white p-6 shadow-xl shadow-zinc-900/5 dark:border-[#3a2a0c] dark:bg-[#1a1205] dark:shadow-amber-950/20">
         <div className="flex items-center gap-3">
-          <span className="grid size-11 place-items-center rounded-xl bg-blue-600 text-white">
+          <span className="grid size-11 place-items-center rounded-xl bg-gradient-to-br from-amber-400 via-yellow-300 to-amber-600 text-amber-950 shadow-sm shadow-amber-500/30">
             <ShieldCheck className="size-6" />
           </span>
           <div>
@@ -126,7 +131,7 @@ export default function AuthPage() {
 
         {step === "form" ? (
           <>
-            <div className="mt-7 grid grid-cols-2 rounded-xl bg-zinc-100 p-1 dark:bg-[#0c1628]">
+            <div className="mt-7 grid grid-cols-2 rounded-xl bg-amber-100 p-1 dark:bg-[#241807]">
               {(["login", "register"] as const).map((item) => (
                 <button
                   key={item}
@@ -136,7 +141,7 @@ export default function AuthPage() {
                   }}
                   className={
                     mode === item
-                      ? "rounded-lg bg-white px-3 py-2 text-sm font-bold shadow-sm dark:bg-[#17233a]"
+                      ? "rounded-lg bg-white px-3 py-2 text-sm font-bold shadow-sm dark:bg-[#3a2a0c]"
                       : "rounded-lg px-3 py-2 text-sm font-bold text-zinc-500 dark:text-slate-400"
                   }
                 >
@@ -151,7 +156,7 @@ export default function AuthPage() {
                   <span className="text-sm font-semibold">Нэр</span>
                   <div className="relative mt-2">
                     <UserRound className="absolute left-3 top-3 size-5 text-zinc-400" />
-                    <Input className="pl-10 dark:border-[#17233a] dark:bg-[#0c1628]" value={name} onChange={(event) => setName(event.target.value)} placeholder="Таны нэр" />
+                    <Input className="pl-10 dark:border-[#3a2a0c] dark:bg-[#241807]" value={name} onChange={(event) => setName(event.target.value)} placeholder="Таны нэр" />
                   </div>
                 </label>
               ) : null}
@@ -162,7 +167,7 @@ export default function AuthPage() {
                   <Phone className="absolute left-3 top-3 size-5 text-zinc-400" />
                   <span className="absolute left-10 top-1/2 -translate-y-1/2 select-none text-sm font-semibold text-zinc-500 dark:text-slate-400">+976 </span>
                   <Input
-                    className="pl-[5.5rem] dark:border-[#17233a] dark:bg-[#0c1628]"
+                    className="pl-[5.5rem] dark:border-[#3a2a0c] dark:bg-[#241807]"
                     inputMode="numeric"
                     value={localPhone}
                     onChange={(event) => setLocalPhone(event.target.value.replace(/\D/g, "").slice(0, 8))}
@@ -174,9 +179,9 @@ export default function AuthPage() {
               <label className="block">
                 <span className="text-sm font-semibold">Нууц үг</span>
                 <div className="relative mt-2">
-                  <LockKeyhole className="absolute left-3 top-3 size-5 text-zinc-400" />
-                  <Input className="pl-10 pr-10 dark:border-[#17233a] dark:bg-[#0c1628]" type={showPassword ? "text" : "password"} value={password} onChange={(event) => setPassword(event.target.value)} placeholder="••••••••" />
-                  <button type="button" onClick={() => setShowPassword((v) => !v)} className="absolute right-3 top-3 text-zinc-400 hover:text-zinc-600 dark:hover:text-slate-300">
+                  <LockKeyhole className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-zinc-400" />
+                  <Input className="pl-12 pr-12 dark:border-[#3a2a0c] dark:bg-[#241807]" type={showPassword ? "text" : "password"} value={password} onChange={(event) => setPassword(event.target.value)} placeholder="••••••••" />
+                  <button type="button" onClick={() => setShowPassword((v) => !v)} className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-slate-300">
                     {showPassword ? <EyeOff className="size-5" /> : <Eye className="size-5" />}
                   </button>
                 </div>
@@ -187,15 +192,15 @@ export default function AuthPage() {
                   <label className="block">
                     <span className="text-sm font-semibold">Нууц үг давтах</span>
                     <div className="relative mt-2">
-                      <LockKeyhole className="absolute left-3 top-3 size-5 text-zinc-400" />
-                      <Input className="pl-10 pr-10 dark:border-[#17233a] dark:bg-[#0c1628]" type={showRepeat ? "text" : "password"} value={repeatPassword} onChange={(event) => setRepeatPassword(event.target.value)} placeholder="••••••••" />
-                      <button type="button" onClick={() => setShowRepeat((v) => !v)} className="absolute right-3 top-3 text-zinc-400 hover:text-zinc-600 dark:hover:text-slate-300">
+                      <LockKeyhole className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-zinc-400" />
+                      <Input className="pl-12 pr-12 dark:border-[#3a2a0c] dark:bg-[#241807]" type={showRepeat ? "text" : "password"} value={repeatPassword} onChange={(event) => setRepeatPassword(event.target.value)} placeholder="••••••••" />
+                      <button type="button" onClick={() => setShowRepeat((v) => !v)} className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 dark:hover:text-slate-300">
                         {showRepeat ? <EyeOff className="size-5" /> : <Eye className="size-5" />}
                       </button>
                     </div>
                   </label>
 
-                  <div className="rounded-xl border border-zinc-200 bg-zinc-50 p-3 dark:border-[#17233a] dark:bg-[#0c1628]">
+                  <div className="rounded-xl border border-zinc-200 bg-amber-50 p-3 dark:border-[#3a2a0c] dark:bg-[#241807]">
                     <div className="grid gap-2">
                       {checks.map((check) => (
                         <div key={check.label} className={check.ok ? "flex items-center gap-2 text-sm text-emerald-600 dark:text-emerald-300" : "flex items-center gap-2 text-sm text-zinc-500 dark:text-slate-400"}>
@@ -212,7 +217,7 @@ export default function AuthPage() {
                 </>
               ) : null}
 
-              <Button className="w-full bg-blue-600 hover:bg-blue-700" onClick={mode === "login" ? login : startRegistration} disabled={loading}>
+              <Button className="w-full bg-amber-500 hover:bg-amber-600" onClick={mode === "login" ? login : startRegistration} disabled={loading}>
                 {loading ? "Түр хүлээнэ үү..." : mode === "login" ? "Нэвтрэх" : "Бүртгүүлэх"}
               </Button>
             </motion.div>
@@ -232,7 +237,7 @@ export default function AuthPage() {
                   inputMode="numeric"
                   maxLength={1}
                   value={digit}
-                  className="aspect-square rounded-lg border border-zinc-200 bg-white text-center text-2xl font-black outline-none focus:border-blue-400 focus:ring-4 focus:ring-blue-500/10 dark:border-[#17233a] dark:bg-[#0c1628]"
+                  className="aspect-square rounded-lg border border-zinc-200 bg-white text-center text-2xl font-black outline-none focus:border-amber-400 focus:ring-4 focus:ring-amber-500/10 dark:border-[#3a2a0c] dark:bg-[#241807]"
                   onChange={(event) => {
                     const next = [...otp];
                     next[index] = event.target.value.replace(/\D/g, "");
@@ -244,7 +249,7 @@ export default function AuthPage() {
               ))}
             </div>
             <p className="mt-4 text-center text-sm text-zinc-600 dark:text-slate-400">00:{String(seconds).padStart(2, "0")}</p>
-            <Button className="mt-5 w-full bg-blue-600 hover:bg-blue-700" onClick={() => verifyRegistration()} disabled={loading || otp.join("").length !== 6}>
+            <Button className="mt-5 w-full bg-amber-500 hover:bg-amber-600" onClick={() => verifyRegistration()} disabled={loading || otp.join("").length !== 6}>
               Бүртгэл баталгаажуулах
             </Button>
           </motion.div>

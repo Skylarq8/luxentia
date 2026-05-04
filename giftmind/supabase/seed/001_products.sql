@@ -5,7 +5,8 @@ insert into public.categories (name, slug, image_url) values
   ('Food', 'food', 'https://images.unsplash.com/photo-1542838132-92c53300491e'),
   ('Home Decor', 'home-decor', 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38'),
   ('Books', 'books', 'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f'),
-  ('Toys', 'toys', 'https://images.unsplash.com/photo-1558060370-d644479cb6f7')
+  ('Toys', 'toys', 'https://images.unsplash.com/photo-1558060370-d644479cb6f7'),
+  ('Jewelry', 'jewelry', 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338')
 on conflict (slug) do nothing;
 
 insert into public.products (name, description, price, category, tags, images, stock, metadata) values
@@ -42,7 +43,7 @@ insert into public.products (name, description, price, category, tags, images, s
 ('Korean Snack Box', 'Sweet, spicy, and crunchy snack mix for movie nights.', 45000, 'food', array['snacks','friend','fun'], array['https://images.unsplash.com/photo-1621939514649-280e2ee25f60'], 31, '{}'),
 ('Fruit Arrangement Basket', 'Fresh seasonal fruit arranged for family visits and thank-yous.', 89000, 'food', array['fruit','family','healthy'], array['https://images.unsplash.com/photo-1610832958506-aa56368176cf'], 12, '{}'),
 
-('Soy Candle Amber', 'Long-burning amber candle with a warm evening scent.', 39000, 'home-decor', array['candle','home','romantic'], array['https://images.unsplash.com/photo-1602874801006-e26c6694b1d6'], 52, '{}'),
+('Soy Candle Amber', 'Long-burning amber candle with a warm evening scent.', 39000, 'home-decor', array['candle','home','romantic'], array['https://images.pexels.com/photos/7795651/pexels-photo-7795651.jpeg?auto=compress&cs=tinysrgb&w=900'], 52, '{}'),
 ('Ceramic Mug Pair', 'Two handmade-look mugs for tea, coffee, and cozy mornings.', 44000, 'home-decor', array['mug','couple','home'], array['https://images.unsplash.com/photo-1514228742587-6b1558fcca3d'], 37, '{}'),
 ('Minimal Flower Vase', 'Matte ceramic vase that looks beautiful with fresh or dried flowers.', 58000, 'home-decor', array['vase','mom','decor'], array['https://images.unsplash.com/photo-1612196808214-b8e1d6145a8c'], 21, '{}'),
 ('Moon Night Light', 'Soft bedside lamp for dreamy bedrooms and gentle sleep routines.', 52000, 'home-decor', array['night light','kids','girlfriend'], array['https://images.unsplash.com/photo-1513506003901-1e6a229e2d15'], 25, '{}'),
@@ -62,7 +63,7 @@ insert into public.products (name, description, price, category, tags, images, s
 ('Plush Bear Classic', 'Soft plush bear with ribbon and gift bag packaging.', 34000, 'toys', array['plush','cute','girlfriend'], array['https://images.unsplash.com/photo-1559454403-b8fb88521f11'], 40, '{}'),
 ('Mini Building Blocks Set', 'Creative blocks for ages 6+ with colorful tiny builds.', 49000, 'toys', array['blocks','kids','creative'], array['https://images.unsplash.com/photo-1587654780291-39c9404d746b'], 32, '{}'),
 ('Board Game Night Pack', 'Fast family board game with simple rules and replay value.', 69000, 'toys', array['board game','family','friend'], array['https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09'], 20, '{}'),
-('Remote Control Mini Car', 'Rechargeable mini car for indoor racing and playful breaks.', 59000, 'toys', array['car','kids','fun'], array['https://images.unsplash.com/photo-1594736797933-d0401ba2fe65'], 24, '{}'),
+('Remote Control Mini Car', 'Rechargeable mini car for indoor racing and playful breaks.', 59000, 'toys', array['car','kids','fun'], array['https://images.pexels.com/photos/6779862/pexels-photo-6779862.jpeg?auto=compress&cs=tinysrgb&w=900'], 24, '{}'),
 ('DIY Bracelet Kit', 'Colorful beads and charms for handmade friendship bracelets.', 31000, 'toys', array['craft','friend','kids'], array['https://images.unsplash.com/photo-1515562141207-7a88fb7ce338'], 53, '{}'),
 ('Science Experiment Box', 'Safe home experiments with cards, tools, and discovery prompts.', 74000, 'toys', array['science','kids','learning'], array['https://images.unsplash.com/photo-1532094349884-543bc11b234d'], 18, '{}')
 on conflict do nothing;

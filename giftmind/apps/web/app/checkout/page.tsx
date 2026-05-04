@@ -24,9 +24,9 @@ export default function CheckoutPage() {
 
   return (
     <main className="mx-auto grid max-w-6xl gap-8 px-4 py-8 lg:grid-cols-[1fr_360px]">
-      <section className="rounded-lg border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
+      <section className="rounded-lg border border-zinc-200 bg-white p-5 dark:border-[#3a2a0c] dark:bg-[#1a1205]">
         <div className="flex items-center gap-2 text-xl font-black">
-          <MapPin className="size-5 text-rose-500" />
+          <MapPin className="size-5 text-amber-500" />
           Хүргэлтийн хаяг
         </div>
         <div className="mt-5 grid gap-4 sm:grid-cols-2">
@@ -35,11 +35,11 @@ export default function CheckoutPage() {
           <Input placeholder="Дүүрэг" value={address.district} onChange={(event) => setAddress({ ...address, district: event.target.value })} />
           <Input placeholder="Дэлгэрэнгүй хаяг" value={address.details} onChange={(event) => setAddress({ ...address, details: event.target.value })} />
         </div>
-        {message ? <p className="mt-5 rounded-lg bg-cyan-50 p-3 text-sm text-cyan-800 dark:bg-cyan-500/10 dark:text-cyan-200">{message}</p> : null}
+        {message ? <p className="mt-5 rounded-lg bg-amber-50 p-3 text-sm text-amber-800 dark:bg-amber-500/10 dark:text-amber-200">{message}</p> : null}
       </section>
-      <aside className="h-fit rounded-lg border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
+      <aside className="h-fit rounded-lg border border-zinc-200 bg-white p-5 dark:border-[#3a2a0c] dark:bg-[#1a1205]">
         <div className="flex items-center gap-2 text-xl font-black">
-          <CreditCard className="size-5 text-cyan-500" />
+          <CreditCard className="size-5 text-amber-400" />
           Төлбөр
         </div>
         <div className="mt-5 space-y-3">
@@ -50,7 +50,7 @@ export default function CheckoutPage() {
             </div>
           ))}
         </div>
-        <div className="mt-5 flex justify-between border-t border-zinc-200 pt-4 text-lg font-black dark:border-zinc-800">
+        <div className="mt-5 flex justify-between border-t border-zinc-200 pt-4 text-lg font-black dark:border-[#3a2a0c]">
           <span>Нийт</span>
           <span>{formatMnt(total)}</span>
         </div>

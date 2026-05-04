@@ -8,10 +8,10 @@ import { useAuth } from "../../components/auth-provider";
 
 function Avatar({ name, avatarUrl }: { name: string; avatarUrl: string | null }) {
   if (avatarUrl) {
-    return <img src={avatarUrl} alt={name} className="size-24 rounded-full object-cover ring-4 ring-blue-500/20 sm:size-28" />;
+    return <img src={avatarUrl} alt={name} className="size-24 rounded-full object-cover ring-4 ring-amber-500/20 sm:size-28" />;
   }
   return (
-    <div className="grid size-24 place-items-center rounded-full bg-gradient-to-br from-blue-600 to-cyan-500 text-3xl font-black text-white ring-4 ring-blue-500/20 sm:size-28 sm:text-4xl">
+    <div className="grid size-24 place-items-center rounded-full bg-gradient-to-br from-amber-500 to-yellow-400 text-3xl font-black text-white ring-4 ring-amber-500/20 sm:size-28 sm:text-4xl">
       {name.charAt(0).toUpperCase()}
     </div>
   );
@@ -27,8 +27,8 @@ export default function ProfilePage() {
 
   if (loading || !user) {
     return (
-      <main className="grid min-h-[calc(100vh-4rem)] place-items-center bg-white dark:bg-[#050914]">
-        <div className="size-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
+      <main className="grid min-h-[calc(100vh-4rem)] place-items-center bg-white dark:bg-[#0f0a03]">
+        <div className="size-8 animate-spin rounded-full border-4 border-amber-500 border-t-transparent" />
       </main>
     );
   }
@@ -36,7 +36,7 @@ export default function ProfilePage() {
   const joinedDate = new Intl.DateTimeFormat("mn-MN", { year: "numeric", month: "long", day: "numeric" }).format(new Date(user.created_at));
 
   return (
-    <main className="min-h-[calc(100vh-4rem)] bg-white px-4 py-8 text-zinc-950 dark:bg-[#050914] dark:text-slate-50 sm:py-12">
+    <main className="min-h-[calc(100vh-4rem)] bg-white px-4 py-8 text-zinc-950 dark:bg-[#0f0a03] dark:text-slate-50 sm:py-12">
       <div className="mx-auto max-w-lg">
 
         {/* Avatar + name */}
@@ -45,7 +45,7 @@ export default function ProfilePage() {
           <div>
             <h1 className="text-2xl font-black sm:text-3xl">{user.name}</h1>
             {user.role === "admin" && (
-              <span className="mt-1 inline-flex items-center gap-1 rounded-full bg-blue-50 px-2 py-0.5 text-xs font-bold text-blue-700 dark:bg-blue-400/10 dark:text-blue-300">
+              <span className="mt-1 inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-xs font-bold text-amber-800 dark:bg-amber-400/10 dark:text-amber-300">
                 <ShieldCheck className="size-3" /> Админ
               </span>
             )}
@@ -54,8 +54,8 @@ export default function ProfilePage() {
 
         {/* Info cards */}
         <div className="mt-8 grid gap-3">
-          <div className="flex items-center gap-4 rounded-2xl border border-zinc-100 bg-zinc-50 px-5 py-4 dark:border-[#17233a] dark:bg-[#08111f]">
-            <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-300">
+          <div className="flex items-center gap-4 rounded-2xl border border-zinc-100 bg-amber-50 px-5 py-4 dark:border-[#3a2a0c] dark:bg-[#1a1205]">
+            <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-300">
               <Phone className="size-5" />
             </span>
             <div>
@@ -64,8 +64,8 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          <div className="flex items-center gap-4 rounded-2xl border border-zinc-100 bg-zinc-50 px-5 py-4 dark:border-[#17233a] dark:bg-[#08111f]">
-            <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-300">
+          <div className="flex items-center gap-4 rounded-2xl border border-zinc-100 bg-amber-50 px-5 py-4 dark:border-[#3a2a0c] dark:bg-[#1a1205]">
+            <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-300">
               <CalendarDays className="size-5" />
             </span>
             <div>
@@ -77,7 +77,7 @@ export default function ProfilePage() {
 
         {/* Stats */}
         <div className="mt-4 grid grid-cols-2 gap-3">
-          <div className="flex items-center gap-4 rounded-2xl border border-zinc-100 bg-zinc-50 px-5 py-4 dark:border-[#17233a] dark:bg-[#08111f]">
+          <div className="flex items-center gap-4 rounded-2xl border border-zinc-100 bg-amber-50 px-5 py-4 dark:border-[#3a2a0c] dark:bg-[#1a1205]">
             <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-300">
               <Package className="size-5" />
             </span>
@@ -87,8 +87,8 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          <div className="flex items-center gap-4 rounded-2xl border border-zinc-100 bg-zinc-50 px-5 py-4 dark:border-[#17233a] dark:bg-[#08111f]">
-            <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-rose-50 text-rose-600 dark:bg-rose-500/10 dark:text-rose-300">
+          <div className="flex items-center gap-4 rounded-2xl border border-zinc-100 bg-amber-50 px-5 py-4 dark:border-[#3a2a0c] dark:bg-[#1a1205]">
+            <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-300">
               <Heart className="size-5" />
             </span>
             <div>

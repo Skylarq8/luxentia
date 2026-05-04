@@ -37,10 +37,10 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
           </div>
         </motion.div>
         <motion.section initial={{ opacity: 0, x: 24 }} animate={{ opacity: 1, x: 0 }}>
-          <p className="text-sm font-bold uppercase tracking-wider text-rose-500">{product.category}</p>
+          <p className="text-sm font-bold uppercase tracking-wider text-amber-500">{product.category}</p>
           <h1 className="mt-3 text-4xl font-black">{product.name}</h1>
           <p className="mt-4 text-lg text-zinc-600 dark:text-zinc-300">{product.description}</p>
-          <p className="mt-6 text-3xl font-black text-rose-500">{formatMnt(product.price)}</p>
+          <p className="mt-6 text-3xl font-black text-amber-500">{formatMnt(product.price)}</p>
           <div className="mt-6 flex items-center gap-3">
             <button className="grid size-11 place-items-center rounded-lg bg-zinc-100 dark:bg-zinc-800" onClick={() => setQuantity((value) => Math.max(1, value - 1))} aria-label="Decrease">
               <Minus className="size-5" />
@@ -56,7 +56,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
           </div>
           <div className="mt-8 rounded-lg border border-zinc-200 p-4 dark:border-zinc-800">
             <div className="flex items-center gap-2 font-black">
-              <Sparkles className="size-5 text-cyan-500" />
+              <Sparkles className="size-5 text-amber-400" />
               Similar gifts
             </div>
             <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">AI context болон ангилалд тулгуурласан ойролцоо сонголтууд.</p>
